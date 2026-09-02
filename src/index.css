@@ -1,0 +1,268 @@
+:root {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: #e6edf3;
+  background: #0d1b2a;
+  --panel: #132f45;
+  --muted: #9fb3c8;
+  --water: #1b4965;
+  --water-hover: #2a6f97;
+  --ship: #8d99ae;
+  --hit: #ff6b35;
+  --sunk: #c9184a;
+  --miss-ring: rgba(230, 237, 243, 0.55);
+  /* Cell size shrinks on narrow screens so a 10x10 board always fits. */
+  --cell: min(2.2rem, calc((100vw - 3rem) / 11));
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  letter-spacing: 0.05em;
+}
+
+.new-game {
+  padding: 0.5rem 1.1rem;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 6px;
+  background: #ffb703;
+  color: #0d1b2a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.new-game:hover {
+  background: #ffc933;
+}
+
+.status-row {
+  margin: 1.25rem 0 1.75rem;
+  min-height: 3rem;
+}
+
+.status {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.status.human {
+  color: #80ed99;
+}
+
+.status.ai {
+  color: #ff8fa3;
+}
+
+.result {
+  margin: 0.25rem 0 0;
+  min-height: 1.4rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.quip {
+  color: #e6edf3;
+  font-style: italic;
+}
+
+.boards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  justify-content: center;
+}
+
+/* Let the board, not the fleet list, decide each column's width. */
+.boards > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min-content;
+}
+
+/* When the boards stack, put the board you shoot at first. */
+@media (max-width: 850px) {
+  .boards > div:last-child {
+    order: -1;
+  }
+}
+
+.board-section h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0 0 0.6rem;
+  font-size: 1.15rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: 1.5rem repeat(10, var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: 2px;
+}
+
+.label,
+.corner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.cell,
+.swatch {
+  position: relative;
+  border: none;
+  border-radius: 3px;
+  background: var(--water);
+  color: #fff;
+  font-size: calc(var(--cell) * 0.55);
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board.interactive .cell:not(:disabled) {
+  cursor: crosshair;
+}
+
+.board.interactive .cell:not(:disabled):hover {
+  background: var(--water-hover);
+}
+
+.cell.ship,
+.swatch.ship {
+  background: var(--ship);
+}
+
+/* Miss: same water, subtle ring. */
+.cell.miss::after,
+.swatch.miss::after {
+  content: '';
+  width: 35%;
+  height: 35%;
+  border-radius: 50%;
+  border: 2px solid var(--miss-ring);
+}
+
+/* Hit: orange. */
+.cell.hit,
+.swatch.hit {
+  background: var(--hit);
+  color: #1a0a00;
+}
+
+/* Sunk: stronger red. */
+.cell.sunk,
+.swatch.sunk {
+  background: var(--sunk);
+  color: #fff;
+}
+
+.fleet {
+  list-style: none;
+  width: 100%;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+  color: #c9d6e2;
+}
+
+.fleet li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background: var(--panel);
+}
+
+.fleet li.sunk {
+  color: var(--muted);
+}
+
+.fleet li.sunk .ship-state {
+  color: var(--sunk);
+}
+
+.ship-state {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.swatch {
+  width: 1.2rem;
+  height: 1.2rem;
+  font-size: 0.75rem;
+  margin-left: 0.6rem;
+}
+
+.swatch:first-child {
+  margin-left: 0;
+}
+
+.log {
+  list-style: none;
+  margin: 1.25rem auto 0;
+  max-width: 500px;
+  padding: 0.75rem 1.25rem;
+  background: var(--panel);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #c9d6e2;
+}
